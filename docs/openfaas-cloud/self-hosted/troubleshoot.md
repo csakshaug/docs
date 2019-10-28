@@ -219,7 +219,19 @@ kubectl describe -n openfaas deploy/edge-auth
 kubectl logs -n openfaas deploy/edge-auth
 ```
 
-Check that `client_id` is set correctly along with the direct URL and cookie domain.
+Check that `client_id` and `client_secret` is set correctly along with the direct URL and cookie domain.
+
+Update `client_id` and `client_secret` without running the ofc-bootstrap tool again:
+
+* Get the `client_id` and `client_secret` from GitHub
+* Create a base64 encoded string of the `client_secret`
+* `kubectl -n openfaas edit secret of-client-secret` and change the `of-client-secret` value with new base64 encoded string.
+* `kubectl edit -n openfaas deploy/edge-auth` and change the value for the `client_id`
+* With `kubectl logs -n openfaas deploy/edge-auth` you will still see the old id and secret so you need to restart the auth service (pod)
+ * `kubectl scale deploy/edge-auth --replicas=0 -n openfaas`
+ * `kubectl scale deploy/edge-auth --replicas=1 -n openfaas`
+* Logon and check the logs
+* Update the `init.yaml` for later
 
 ### Still not working?
 
